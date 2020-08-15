@@ -1,140 +1,203 @@
-import React, { useState, useEffect } from "react"
-import { signup } from "../../state/auth/authActionCreator"
-import { connect, useDispatch } from "react-redux"
-import SignupStyled from "./SignupStyled"
-import { validateEmail } from "./utils"
-import { Link } from "react-router-dom"
+import React, { useEffect } from 'react';
+import { signup } from '../../state/auth/authActionCreator';
+import { connect, useDispatch } from 'react-redux';
+import SignupStyled from './SignupStyled';
+// import { validateEmail } from './utils';
+import { Link } from 'react-router-dom';
+import AlertComponent from '../common/AuthAlert';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import codeClanLogoWhite from '../assets/image/codeClanLogoWhite.png';
+import Spinner from 'react-bootstrap/Spinner';
+import loginAmico from '../assets/image/Login-amico.png';
+import { notification } from 'antd';
 
-function Signup({
-  register,
-  loading,
-  error,
-  errResponse,
-  token,
-  history,
-  location,
-}) {
-  const [values, setValues] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  })
-  const dispatch = useDispatch()
-  const [emailError, setEmailError] = useState(false)
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    register(values)
-    console.log(loading)
-  }
+function Signup({ register, loading, errResponse, token, history }) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({ type: 'AUTH_RESET' });
+  }, [dispatch]);
+
+  const openNotification = () => {
+    notification.success({
+      message: 'Registration Successful',
+      description: 'Kindly check your email for further instructions',
+    });
+  };
 
   useEffect(() => {
     if (token) {
-      history.push("/dashboard")
+      openNotification();
+      history.push('/email-verification-sent/');
     }
-    return () => {
-      dispatch({ type: "AUTH_RESET" })
-    }
-  }, [token, history, dispatch])
+  }, [token, history, dispatch]);
 
-  const handleChange = (e) => {
-    if (e.target.name === "email") {
-      setEmailError(!validateEmail(e.target.value))
-    }
-
-    setValues({
-      ...values,
-      [e.target.name]: e.target.value,
-    })
-  }
+  const errorClassNames = 'border input border-danger';
+  const validClassNames = 'border input border-green';
+  const regex = /^[a-z]([-']?[a-z]+)*( [a-z]([-']?[a-z]+)*)+$/i;
 
   return (
-    <SignupStyled>
-      <p className="title">Sign Up</p>
-      <div className="signUpDiv">
-        <form action="" id="signUpForm" onSubmit={handleSubmit}>
-          <p className="info blue signUp">sign up with email</p>
-          {error ? <div className="error"> {errResponse}</div> : null}
-          <div className="nameInputGroup">
-            <label for="firstName">
-              First Name
-              <br />
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                onChange={handleChange}
-                required
+    <Formik
+      initialValues={{ fullName: '', email: '', password1: '', password2: '' }}
+      validationSchema={Yup.object({
+        fullName: Yup.string()
+          .min(3, 'Too short')
+          .max(64, 'Must be 64 characters or less')
+          .matches(regex, 'Enter your full name i.e John Doe')
+          .required('Enter your full name i.e John Doe'),
+        email: Yup.string()
+          .email('Invalid email address')
+          .required('Enter your email address'),
+        password1: Yup.string().required('Enter a password of your choice'),
+        password2: Yup.string()
+          .required('Confirm the password entered above')
+          .oneOf([Yup.ref('password1'), null], 'Passwords must match'),
+      })}
+      onSubmit={(values, { setSubmitting }) => {
+        setSubmitting(true);
+        const tempValues = { ...values };
+        const nameArray = tempValues.fullName.split(' ');
+        tempValues.firstName = nameArray[0];
+        tempValues.lastName = nameArray[1];
+        tempValues.password = tempValues.password1;
+        delete tempValues.fullName;
+        delete tempValues.password1;
+        delete tempValues.password2;
+        register(tempValues);
+      }}
+    >
+      {({ errors, touched, isSubmitting }) => (
+        <SignupStyled>
+          <div id="wrapper">
+            <div id="signUpInfo">
+              <img
+                src={codeClanLogoWhite}
+                className="img-fluid"
+                alt="Code Clan Logo"
               />
-            </label>
-            <label for="lastName">
-              Last Name
-              <br />
-              <input
-                type="text"
-                name="lastName"
-                id="lastName"
-                onChange={handleChange}
-                required
+              <h1 class="infoHeading">welcome to CodeClan Nigeria</h1>
+              <p class="infoSubheading">sign up to</p>
+              <img
+                src={loginAmico}
+                alt="Login Animation"
+                id="infoIllustration"
               />
-            </label>
+            </div>
+            <div id="signUpDiv">
+              <Form id="signUpForm">
+                <div className="form-header">
+                  <h1 class="show">Create Account</h1>
+                  <p class=" display">
+                    Start your journey to becoming a world class developer
+                  </p>
+                </div>
+                <AlertComponent variant="danger" text={errResponse} />
+                <div className="nameInputGroup">
+                  <label htmlFor="fullName">Full Name</label>
+                  <Field
+                    name="fullName"
+                    id="fullName"
+                    className={
+                      touched.fullName && errors.fullName
+                        ? errorClassNames
+                        : validClassNames
+                    }
+                    type="text"
+                  />
+                  <div className="d-block text-monospace text-danger small-text">
+                    <ErrorMessage name="fullName" className="d-block" />
+                  </div>
+                </div>
+
+                <label htmlFor="email">Email Address</label>
+                <Field
+                  name="email"
+                  className={
+                    touched.email && errors.email
+                      ? errorClassNames
+                      : validClassNames
+                  }
+                  type="email"
+                />
+                <div className="d-block text-monospace text-danger small-text">
+                  <ErrorMessage name="email" className="d-block" />
+                </div>
+
+                <label htmlFor="password1">Password</label>
+                <Field
+                  name="password1"
+                  className={
+                    touched.password1 && errors.password1
+                      ? errorClassNames
+                      : validClassNames
+                  }
+                  type="password"
+                />
+                <div className="d-block text-monospace text-danger small-text">
+                  <ErrorMessage name="password1" className="d-block" />
+                </div>
+
+                <label htmlFor="password2">Confirm Password</label>
+                <Field
+                  name="password2"
+                  className={
+                    touched.password2 && errors.password2
+                      ? errorClassNames
+                      : validClassNames
+                  }
+                  type="password"
+                />
+                <div className="d-block text-monospace text-danger small-text">
+                  <ErrorMessage name="password2" className="d-block" />
+                </div>
+
+                <p className="info blue privacy">
+                  by clicking on this button, you agree to our Terms of use and
+                  privacy policy
+                </p>
+                <button
+                  disabled={loading}
+                  className={loading ? 'btn btn-light w-100' : 'submit'}
+                  type="submit"
+                >
+                  {!loading ? (
+                    'get started'
+                  ) : (
+                    <span>
+                      <Spinner animation="border" variant="primary" /> Signing
+                      up....
+                    </span>
+                  )}
+                </button>
+                <p className="info blue signIn">
+                  already have an account?
+                  <span>
+                    <Link to="/login/">Sign In</Link>
+                  </span>
+                </p>
+              </Form>
+            </div>
           </div>
-          <label for="email">
-            Email
-            <br />
-            <input
-              type="email"
-              name="email"
-              id="email"
-              onChange={handleChange}
-              required
-              className={emailError ? "box-error" : "dd"}
-            />
-          </label>
-          <label for="password">
-            Password
-            <br />
-            <input
-              type="password"
-              name="password"
-              className=""
-              required
-              id="password"
-              onChange={handleChange}
-            />
-          </label>
-          <p className="info blue privacy">
-            by clicking on this button, you agree to our Terms of use and
-            privacy policy
-          </p>
-          <button disabled={emailError} className="submit">
-            {!loading ? "get started" : "Signing up...."}
-          </button>
-          <p className="info blue signIn">
-            already have an account?
-            <span>
-              <Link to="/login/">Sign In</Link>
-            </span>
-          </p>
-        </form>
-      </div>
-    </SignupStyled>
-  )
+        </SignupStyled>
+      )}
+    </Formik>
+  );
 }
 
 // export default Signup;
 
-const mapStateToProps = (store) => {
+const mapStateToProps = store => {
   return {
     loading: store.auth.loading,
     token: store.auth.token,
     error: store.auth.error,
     errResponse: store.auth.errResponse,
-  }
-}
+  };
+};
 
 const mapDispatchToProps = {
   register: signup,
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Signup)
+export default connect(mapStateToProps, mapDispatchToProps)(Signup);

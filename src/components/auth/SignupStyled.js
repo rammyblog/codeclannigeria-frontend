@@ -1,12 +1,12 @@
-import styled from "styled-components"
+import styled from 'styled-components';
 
 const SignupStyled = styled.div`
-  body {
-    background-color: #f7f4f4;
-    font-family: sans-serif;
+  .none {
+    display: none;
   }
+  /**Reusables*/
   .blue {
-    color: #1f59bb;
+    color: ${props => props.theme.primaryColor};
     text-transform: capitalize;
     font-weight: 400;
   }
@@ -15,94 +15,180 @@ const SignupStyled = styled.div`
     font-weight: 600;
     text-transform: capitalize;
   }
-  .signUp {
-    padding: 0rem 0.2rem;
+  /*Wrapper*/
+  #wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+  }
+  /**SignUpInfo Styles*/
+  #signUpInfo {
+    background-color: ${props => props.theme.primaryColor};
+    color: #ffffff;
+    padding: 2rem;
+    width: 100%;
+  }
+  #logo {
+    color: #fff;
+    width: 90px;
+    height: 90px;
+  }
+
+  .infoHeading {
+    font-weight: 500;
+    font-size: 50px;
+    line-height: 75px;
+    color: #fff;
+  }
+
+  .infoSubheading {
+    font-size: 18px;
+    line-height: 27px;
+  }
+
+  .infoHeading,
+  .infoSubheading {
+    text-transform: capitalize;
+    margin: 1rem;
+  }
+  .infoSubheading::after {
+    content: '...';
+  }
+  #infoIllustration {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-self: center;
+    margin: auto;
+  }
+  /*SignUpDiv styles**/
+  #signUpDiv {
+    background-color: #fff;
+    border: transparent;
+    margin: auto;
+    width: 100%;
+  }
+  #signUpForm {
+    margin: 0 auto;
+    width: 25rem;
+  }
+
+  .nameInputGroup {
+    /* width: 26.25rem; */
+  }
+  .nameInputGroup label:nth-child(2) {
+    margin-left: 1rem;
+  }
+  label {
+    color: ${props => props.theme.primaryColor};
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    line-height: 21px;
+  }
+  .input {
+    border: 0.25px solid ${props => props.theme.primaryColor};
+    background: rgba(31, 89, 187, 0.05);
+    border-radius: 5px;
+    height: 2.3rem;
+    width: 100%;
+  }
+  input[type='password'],
+  [type='email'] {
+    height: 2.3rem;
   }
   .privacy {
-    font-weight: 300;
     text-align: center;
-    margin-top: 1rem;
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: 300;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    line-height: 18px;
   }
   .submit {
     text-transform: capitalize;
     text-align: center;
     color: #fff;
     width: 100%;
-    background-color: #1f59bb;
+    background-color: ${props => props.theme.primaryColor};
     border: transparent;
-    margin-top: 0.8rem;
-    padding: 0.6rem 0;
-    border-radius: 10px;
-    cursor: pointer;
+    padding: 0.5rem 0;
+    border-radius: 5px;
   }
-
   .submit::after {
-    content: "!";
+    content: '!';
   }
   .signIn {
     text-align: center;
-    margin-top: 1.2rem;
+    margin-top: 1rem;
     display: flex;
     align-self: center;
     justify-content: center;
   }
   .signIn span {
-    padding-left: 0.3rem;
+    padding-left: 0.25rem;
   }
   span a {
     color: darkblue;
     font-weight: 500;
   }
-  input {
-    border: 1px solid #1f59bb;
-    background: rgba(31, 89, 187, 0.05);
-    border-radius: 5px;
-    height: 1.8rem;
-    width: 100%;
-    margin-top: 0.5rem;
+  .form-header {
+    color: ${props => props.theme.primaryColor};
+    /* padding-left: 9rem; */
+    h1 {
+      color: ${props => props.theme.primaryColor};
+    }
   }
-  label {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-    margin-top: 1rem;
-    color: #1f59bb;
-    font-size: 17px;
+
+  /**Responsiveness**/
+
+  @media only screen and (max-width: 850px) {
+    #signUpInfo {
+      display: none;
+    }
   }
-  .title {
-    display: flex;
-    align-self: center;
-    justify-content: center;
-    font-size: 35px;
-    color: #1f59bb;
-    font-weight: 600;
-    margin-top: 50px;
+
+  @media only screen and (max-width: 800px) {
+    #wrapper {
+      padding: 1rem;
+    }
+
+    #signUpForm {
+      width: auto;
+    }
+
+    #signUpDiv {
+      padding-top: 3rem;
+    }
+    h1.show {
+      display: block;
+      font-size: 35px;
+      color: ${props => props.theme.primaryColor};
+      text-transform: capitalize;
+      font-weight: 600;
+    }
+    h1.show:after {
+      content: '.';
+      font-size: 30px;
+      font-weight: 500;
+    }
+    h2.display {
+      margin-top: 0.5rem;
+      display: block;
+      color: ${props => props.theme.primaryColor};
+      font-size: 20px;
+      font-weight: 400;
+      opacity: 1;
+    }
+    .nameInputGroup {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .nameInputGroup label:nth-child(2) {
+      margin-left: 0;
+    }
   }
-  .signUpDiv {
-    width: fit-content;
-    height: auto;
-    background-color: #fff;
-    border: transparent;
-    display: block;
-    margin: 20px auto;
-  }
-  #signUpForm {
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .nameInputGroup {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 1rem;
-  }
-  .nameInputGroup label:nth-child(2) {
-    padding-left: 1rem;
-  }
-`
-export default SignupStyled
+`;
+export default SignupStyled;

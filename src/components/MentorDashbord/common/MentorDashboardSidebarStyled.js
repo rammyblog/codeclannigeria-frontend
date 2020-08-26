@@ -14,7 +14,7 @@ const MentorDashboardSidebarStyled = styled.div`
 
   padding-bottom: 33.5rem;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 26px;
 
   display: flex;
@@ -37,6 +37,10 @@ const MentorDashboardSidebarStyled = styled.div`
     :hover {
       text-decoration: none;
     }
+  }
+
+  .active-icon {
+    ${active}
   }
 
   img {
@@ -68,7 +72,7 @@ const MentorDashboardSidebarStyled = styled.div`
 
   .logout__link {
     position: absolute;
-    bottom: 6rem;
+    bottom: 26rem;
     left: 1rem;
   }
 
@@ -81,9 +85,14 @@ const MentorDashboardSidebarStyled = styled.div`
   }
 
   @media (max-width: 820px) {
+    width: 12rem;
     transition: transform 0.3s ease-in-out;
     transform: ${({ showSidebar }) =>
       showSidebar ? 'translateX(0)' : 'translateX(-100%)'};
+
+    .logout__link {
+      left: 2.3rem;
+    }
   }
 `;
 

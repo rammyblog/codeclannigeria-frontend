@@ -5,6 +5,10 @@ const initialState = {
   data: '',
   error: false,
   errResponse: '',
+  editUser: false,
+  mentor: null,
+  mentees: null,
+  singleMentee: null,
 };
 
 export function UserReducer(state = initialState, action) {
@@ -13,13 +17,51 @@ export function UserReducer(state = initialState, action) {
       return {
         ...state,
         loading: true,
+        editUser: '',
+      };
+    case types.EDIT_USER:
+      return {
+        ...state,
+        error: false,
+        errResponse: '',
+        editUser: 'success',
+        loading: false,
+        data: action.payload,
       };
 
     case types.USER_SUCCESS:
       return {
         ...state,
         loading: false,
+        error: false,
+        errResponse: '',
         data: action.payload,
+      };
+    case types.GET_MENTOR:
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        errResponse: '',
+        mentor: action.payload,
+      };
+
+    case types.GET_MENTEES:
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        errResponse: '',
+        mentees: action.payload,
+      };
+
+    case types.GET_MENTEE:
+      return {
+        ...state,
+        loading: false,
+        error: false,
+        errResponse: '',
+        singleMentee: action.payload,
       };
 
     case types.USER_FAILURE:
@@ -27,6 +69,7 @@ export function UserReducer(state = initialState, action) {
         ...state,
         loading: false,
         error: true,
+        editUser: true,
         errResponse: action.payload,
       };
     case types.USER_RESET:

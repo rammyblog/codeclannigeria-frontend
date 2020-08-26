@@ -2,9 +2,14 @@
 
 /* The styles here are used to override  */
 
+@font-face {
+  font-family: 'Gilroy';
+  src: url('./components/assets/fonts/Gilroy-Light.otf');
+}
+
 body {
   margin: 0;
-  font-family: 'Nunito', sans-serif !important;
+  font-family: 'Gilroy', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -154,6 +159,10 @@ code {
   display: flex;
   justify-content: flex-end;
   padding: 1rem 5rem;
+}
+
+.react-tel-input .form-control {
+  width: 100% !important;
 }
 
 @media (max-width: 600px) {

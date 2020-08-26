@@ -7,7 +7,14 @@ const UserCardStyled = styled.div`
     border-radius: 5px;
     /* max-width: 325px; */
 
-    height: 60%;
+    /* height: 60%; */
+  }
+
+  .edit-button{
+    color: #0050af;
+    padding: 1rem;
+    cursor: pointer;
+    /* width: 1.5rem; */
   }
 
   .user__personal__details {
@@ -109,7 +116,7 @@ padding:2rem;
   }
 
   .edit__profile__btn__container {
-    padding: 2rem 0;
+    padding: 1.5rem 2rem;
   }
   .edit__profile__btn {
     background: #00aeff;

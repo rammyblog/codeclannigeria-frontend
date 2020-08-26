@@ -2,39 +2,15 @@ import React, { useState, useEffect } from 'react';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
 import DashboardLayoutStyled from './DashboardLayoutStyled';
-import { ReactComponent as HomeIcon } from '../assets/svgs/dashboard/cli_home.svg';
-import { ReactComponent as UserGroup } from '../assets/svgs/dashboard/cli_group.svg';
-import { ReactComponent as Settings } from '../assets/svgs/dashboard/cli_settings.svg';
-import { ReactComponent as Bookmark } from '../assets/svgs/dashboard/cli_bookmark.svg';
-import { ReactComponent as Message } from '../assets/svgs/dashboard/cli_message.svg';
-import { ReactComponent as Avatar } from '../assets/svgs/dashboard/cli_avatar.svg';
-import { motion } from 'framer-motion';
-import { useStore, useDispatch } from 'react-redux';
-import { getUserProfileApi } from '../../state/user/userActionCreator';
-import CustomLoader from './Spinner/CustomLoader';
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    x: '-100vw',
-    scale: 0.8,
-  },
-  in: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-  },
-  out: {
-    opacity: 0,
-    x: '100vw',
-    scale: 1.2,
-  },
-};
 
-const pageTransition = {
-  type: 'tween',
-  ease: 'easeInOut',
-  duration: 0.3,
-};
+import { useStore, useDispatch, useSelector } from 'react-redux';
+import {
+  getUserProfileApi,
+  getUserMentorProfileApi,
+} from '../../state/user/userActionCreator';
+import CustomLoader from './Spinner/CustomLoader';
+import MentorDashboardStyled from '../MentorDashbord/MentorDashboardStyled';
+import { message } from 'antd';
 
 // const pageStyle = {
 //   position: 'absolute',
@@ -48,56 +24,85 @@ const DashboardLayout = Component => {
       setshowSidebar(!showSidebar);
     };
     const tabs = [
-      { id: 1, icon: <HomeIcon />, link: '/dashboard' },
-      { id: 2, icon: <UserGroup />, link: '/dashboard/mentee/mentor' },
-      { id: 3, icon: <Message />, link: '/dashboard/track' },
-      { id: 4, icon: <Bookmark />, link: '/dashboard/pending-task' },
-      { id: 5, icon: <Avatar />, link: '/dashboard/mentee/profile' },
-      { id: 6, icon: <Settings />, link: '#' },
+      // {
+      //   id: 1,
+      //   icon: <i class="fas fa-home fa-2x"></i>,
+      //   link: '/dashboard',
+      //   name: '',
+      // },
+      {
+        id: 1,
+        icon: <i class="fas fa-user-friends"></i>,
+        link: '/dashboard/mentee/mentor',
+        name: 'Mentor',
+      },
+      {
+        id: 2,
+        icon: <i class="fas fa-code"></i>,
+        link: '/dashboard/track',
+        name: 'Tracks',
+      },
+      {
+        id: 3,
+        icon: <i class="fas fa-tasks"></i>,
+        link: '/dashboard/pending-task',
+        name: 'Tasks',
+      },
+      {
+        id: 4,
+        icon: <i class="fas fa-user-ninja"></i>,
+        link: '/dashboard/mentee/profile',
+        name: 'Profile',
+      },
+
+      {
+        id: 5,
+        icon: <i class="fas fa-sliders-h"></i>,
+        link: '#',
+        name: 'Settings',
+      },
     ];
     const { url } = props.match;
 
     const store = useStore();
     const userState = store.getState().user.data;
     const dispatch = useDispatch();
+    const APIerror = useSelector(state => state.API.error);
 
     useEffect(() => {
-      console.log('mounted');
       if (!userState) {
         setUserLoading(true);
         dispatch(getUserProfileApi());
+        dispatch(getUserMentorProfileApi());
       }
       setUserLoading(false);
     }, [userState, dispatch, userLoading]);
 
+    useEffect(() => {
+      if (APIerror) {
+        message.error(APIerror);
+      }
+    }, [APIerror]);
     return (
-      <DashboardLayoutStyled>
+      <MentorDashboardStyled>
         <DashboardSidebar tabs={tabs} path={url} showSidebar={showSidebar} />
-        <motion.div
-          // style={pageStyle}
-          initial="initial"
-          animate="in"
-          exit="out"
-          variants={pageVariants}
-          transition={pageTransition}
-        >
-          {!userLoading ? (
-            <>
-              <DashboardHeader
-                toggleSidebar={toggleSidebar}
-                showSidebar={showSidebar}
-              />
-              <div className="dashboard-wrap row">
-                <div className="dashboard-content col-md-10 container">
-                  <Component {...props} />
-                </div>
+
+        {!userLoading ? (
+          <>
+            <DashboardHeader
+              toggleSidebar={toggleSidebar}
+              showSidebar={showSidebar}
+            />
+            <div className="dashboard-wrap row">
+              <div className="dashboard-content col-md-9 container">
+                <Component {...props} />
               </div>
-            </>
-          ) : (
-            <CustomLoader />
-          )}
-        </motion.div>
-      </DashboardLayoutStyled>
+            </div>
+          </>
+        ) : (
+          <CustomLoader />
+        )}
+      </MentorDashboardStyled>
     );
   };
 };

@@ -10,10 +10,11 @@ import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import history from './history';
 import { Router } from 'react-router-dom';
+// import Team from './Team';
 
 import App from './App';
 
-const middleWare = [thunk, logger];
+const middleWare = [thunk];
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 

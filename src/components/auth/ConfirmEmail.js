@@ -33,8 +33,6 @@ function ConfirmEmail(props) {
         email,
       })
       .then(result => {
-        console.log({ result });
-        console.log("well let's hope Fortune fixes it");
         setLoading(false);
       })
       .catch(error => {
@@ -75,7 +73,7 @@ function ConfirmEmail(props) {
           ) : (
             <>
               <h2>We couldn't verify your email</h2>
-              <p>Are you sure this is the exact same link from your email</p>
+              <p>Are you sure this is the exact same link from your email?</p>
             </>
           )}
 

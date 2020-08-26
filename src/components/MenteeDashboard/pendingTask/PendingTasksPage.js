@@ -7,23 +7,30 @@ import CustomLoader from '../../common/Spinner/CustomLoader';
 
 function PendingTasksPage() {
   const tasksState = useSelector(state => state.tasks);
+  const user = useSelector(state => state.user);
+
   const dispatch = useDispatch();
   useEffect(() => {
     if (!tasksState.data) {
-      dispatch(getAllTasksAction());
+      if (user.data.tracks && user.data.tracks.length > 1) {
+        dispatch(getAllTasksAction(user.data.tracks[0].id));
+      }
     }
-  }, []);
+    // dispatch(getAllTasksAction());
+  }, [user]);
 
-  if (tasksState.error) {
-    return 'Errro';
-  }
+  // if (tasksState.error) {
+  //   return 'Error';
+  // }
   return (
     <>
-      {!tasksState.loading ? (
+      {tasksState.data ? (
         <PendingTasks tasksData={tasksState.data} />
       ) : (
-        <CustomLoader />
+        <p>No tasks yet!!</p>
       )}
+
+      {tasksState.loading ? <CustomLoader /> : null}
     </>
   );
 }

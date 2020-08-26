@@ -13,6 +13,8 @@ export function AuthReducer(state = initialSIgnupState, action) {
       return {
         ...state,
         loading: true,
+        error: false,
+        errResponse: '',
       };
 
     case types.AUTH_SUCCESS:

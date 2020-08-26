@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardStyled } from './MenteeDashboardStyled';
-import { Skeleton } from 'antd';
 
 // Images
 import newspaper from '../assets/image/dashboard/newspaper.png';
@@ -14,6 +13,7 @@ import TrackEnroll from './tracks/TrackEnroll';
 import { connect } from 'react-redux';
 import { getAllTasksAction } from '../../state/tasks/tasksActionCreator';
 import CustomLoader from '../common/Spinner/CustomLoader';
+import { getUserMentorProfileApi } from '../../state/user/userActionCreator';
 
 function Dashboard({
   userLoading,
@@ -22,21 +22,39 @@ function Dashboard({
   errResponse,
   getAllTasksAction,
   tasksData,
+  history,
+  mentor,
+  getUserMentorProfileApi,
 }) {
-  const [showTracksEnrollModal, setshowTracksEnrollModal] = useState(null);
+  const [showTracksEnrollModal, setshowTracksEnrollModal] = useState();
 
   useEffect(() => {
-    if (userData && userData.tracks.length >= 1) {
-      setshowTracksEnrollModal(false);
+    if (userData && userData.tracks.length < 1) {
+      setshowTracksEnrollModal(true);
     }
+  }, [userData]);
+
+  useEffect(() => {
     if (userData) {
-      console.log(userData);
+      const { city, country, phoneNumber, description } = userData;
+      if (!city || !country || !phoneNumber || !description) {
+        // return
+        history.push({
+          pathname: '/dashboard/mentee/profile',
+          state: { editProfile: true },
+        });
+      }
     }
-  }, []);
+  }, [userData]);
 
   useEffect(() => {
-    getAllTasksAction();
-  }, [getAllTasksAction]);
+    if (userData) {
+      const { tracks } = userData;
+      if (tracks.length >= 1) {
+        getAllTasksAction(tracks[0].id);
+      }
+    }
+  }, [getAllTasksAction, userData]);
 
   const handleShowTracksEnrollModal = () => {
     setshowTracksEnrollModal(true);
@@ -66,7 +84,7 @@ function Dashboard({
               <i class="text-blue fas fa-user-check"></i>
             </div>
             <h6 className="card-subtitle">
-              <span>1</span>
+              <span>{mentor ? mentor.length : 0}</span>
               <p>Approved Mentor</p>
             </h6>
           </div>
@@ -81,7 +99,7 @@ function Dashboard({
               {/* <span>2</span> */}
               <p>
                 {userData && userData.tracks.length > 0
-                  ? `${userData.tracks[0].title} Enrolled`
+                  ? `${userData.tracks[0].title || 'No Track'} Enrolled`
                   : 'No Track enrolled'}
               </p>
             </h6>
@@ -100,7 +118,7 @@ function Dashboard({
           </div>
         </div>
 
-        <div className="card">
+        {/* <div className="card">
           <div className="card-body progress-card">
             <Progress
               type="circle"
@@ -112,7 +130,7 @@ function Dashboard({
               Stage I
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="pending-tasks-wrap mt-5">
@@ -121,9 +139,7 @@ function Dashboard({
             tasksData={tasksData}
             track={userData.tracks[0].title}
           />
-        ) : (
-          <CustomLoader />
-        )}{' '}
+        ) : null}{' '}
       </div>
     </DashboardStyled>
   );
@@ -135,6 +151,7 @@ const mapStateToProps = store => {
     data: userData,
     error,
     errResponse,
+    mentor,
   } = store.user;
 
   const { data: tasksData } = store.tasks;
@@ -143,11 +160,15 @@ const mapStateToProps = store => {
     userData,
     error,
     errResponse,
+    mentor,
     tasksData,
   };
 };
 
-const mapDispatchToProps = { getAllTasksAction };
+const mapDispatchToProps = {
+  getAllTasksAction,
+  getUserMentorProfileApi,
+};
 
 export default DashboardLayout(
   connect(mapStateToProps, mapDispatchToProps)(Dashboard)

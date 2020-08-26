@@ -1,34 +1,93 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StyledNav from './NavbarStyled';
 import { Link } from 'react-router-dom';
-import codeClanLogo from './assets/image/codeClanLogo.png';
+import CodeClanLogo from './assets/image/codeClanLogoWhite.png';
+import Fade from 'react-reveal/Fade';
 
 function Navbar() {
+  const [openMobileNav, setopenMobileNav] = useState(false);
+  const handleOpenMobileNav = () => {
+    setopenMobileNav(!openMobileNav);
+  };
   return (
-    <StyledNav>
-      <nav className="">
-        <header>
-          <Link to="/">
-            <img src={codeClanLogo} className="img-fluid" alt="code clan" />
-          </Link>
-        </header>
-        <ul>
-          <li>
-            <i className="fas fa-search"></i>
-          </li>
-          <li>
-            <Link className="btn btn-outline-primary" to="/login/">
-              Login
-            </Link>
-          </li>
+    <StyledNav openNav={openMobileNav}>
+      <header>
+        <div className="inner-header">
+          <div>
+            <img className="logo" src={CodeClanLogo} alt="code clan" />
+          </div>
+          <div className="menu">
+            <ul>
+              <li>
+                <Link to="/team">Team</Link>
+              </li>
 
-          <li>
-            <Link className="btn btn-primary" to="/register/">
-              Sign up
-            </Link>
-          </li>
-        </ul>
-      </nav>
+              <a href="#">
+                <li>Events</li>
+              </a>
+              <a href="#">
+                <li>About</li>
+              </a>
+              <a href="#">
+                <li>Contact Us</li>
+              </a>
+            </ul>
+          </div>
+          <div className="menu sign desktop-sign">
+            <ul>
+              <li>
+                <Link to="/login/">Login</Link>
+              </li>
+              <li className="button">
+                <Link to="/register/">Sign Up</Link>
+              </li>
+            </ul>
+          </div>
+          <div className="toggle-btn" onClick={() => handleOpenMobileNav()}>
+            {!openMobileNav ? (
+              <i className="fas fa-bars fa-2x text-white"></i>
+            ) : null}
+          </div>
+          <Fade right>
+            <div className="mobile-menu">
+              <div
+                className="toggle-btn close"
+                onClick={() => handleOpenMobileNav()}
+              >
+                <i className="fas fa-times  text-white"></i>
+              </div>
+              <div>
+                <ul>
+                  <Link to="/team">
+                    <li>Team</li>
+                  </Link>
+
+                  <a href="#">
+                    <li>Events</li>
+                  </a>
+                  <a href="#">
+                    <li>About</li>
+                  </a>
+                  <a href="#">
+                    <li>Contact Us</li>
+                  </a>
+                </ul>
+              </div>
+              <div className="menu sign mobile-sign">
+                <ul>
+                  <li>
+                    <Link className='login-link' to="/login/">Login</Link>
+                  </li>
+                  <li className="mobile-button">
+                    <Link to="/register/">Sign Up</Link>
+                  </li>
+                </ul>
+              </div>
+              <p className="header-copyright"> &copy; 2020 CodeClan Nigeria</p>
+            </div>
+          </Fade>
+        </div>
+      </header>
     </StyledNav>
   );
 }

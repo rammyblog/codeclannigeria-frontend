@@ -14,6 +14,8 @@ import { Popconfirm } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import EnrollmentStatus from './EnrollmentStatus';
 import CustomLoader from '../../common/Spinner/CustomLoader';
+import { TrackMentors } from './MentorSelector/TrackMentors';
+import SelectMentorStep from './MentorSelector/SelectMentorStep';
 const { Step } = Steps;
 
 const steps = [
@@ -22,6 +24,9 @@ const steps = [
   },
   {
     title: 'Stages',
+  },
+  {
+    title: 'Mentor Selection',
   },
   {
     title: 'Confirmation',
@@ -40,6 +45,8 @@ function TrackEnroll({
 }) {
   const [current, setCurrent] = useState(0);
   const [trackId, setTrackId] = useState(null);
+  const [mentorId, setMentorId] = useState(null);
+
   const [trackTitle, setTrackTitle] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   // eslint-disable-next-line
@@ -72,13 +79,15 @@ function TrackEnroll({
     setTrackId(e.target.value);
   };
 
-  const handleEnrollTrack = async id => {
+  const handleSetMentorId = e => {
+    setMentorId(e.target.value);
+  };
+
+  const handleEnrollTrack = async (trackId, mentorId) => {
     try {
-      await userEnrollTrackAction(id);
+      await userEnrollTrackAction(trackId, mentorId);
       await getTrackName(trackId);
-    } catch (error) {
-      console.log({ error });
-    }
+    } catch (error) {}
     next();
   };
 
@@ -134,6 +143,15 @@ function TrackEnroll({
         ) : null}
         {current === 1 ? <TracksEnrollStages id={trackId} /> : null}
         {current === 2 ? (
+          <>
+            <SelectMentorStep
+              trackId={trackId}
+              handleSetMentorId={handleSetMentorId}
+            />
+          </>
+        ) : null}
+
+        {current === 3 ? (
           <EnrollmentStatus
             status={error ? 'error' : 'success'}
             title={trackTitle}
@@ -147,6 +165,7 @@ function TrackEnroll({
               Next
             </Button>
           )}
+
           {current === 1 && (
             <>
               <Button type="default" onClick={() => prev()}>
@@ -155,16 +174,35 @@ function TrackEnroll({
 
               <Popconfirm
                 title="Are you sure？"
-                onConfirm={() => handleEnrollTrack(trackId)}
+                onConfirm={() => next()}
                 icon={<QuestionCircleOutlined style={{ color: 'green' }} />}
               >
                 <Button type="primary" className="ml-2">
+                  Next
+                </Button>
+              </Popconfirm>
+            </>
+          )}
+
+          {current === 2 && (
+            <>
+              <Button type="default" onClick={() => prev()}>
+                Back
+              </Button>
+
+              <Popconfirm
+                title="Are you sure？"
+                onConfirm={() => handleEnrollTrack(trackId, mentorId)}
+                icon={<QuestionCircleOutlined style={{ color: 'green' }} />}
+                disabled={!mentorId}
+              >
+                <Button type="primary" disabled={!mentorId} className="ml-2">
                   Enroll
                 </Button>
               </Popconfirm>
             </>
           )}
-          {current === 2 && (
+          {current === 3 && (
             <Button type="primary" onClick={() => onCancel()}>
               Done
             </Button>

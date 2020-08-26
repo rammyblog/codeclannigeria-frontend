@@ -1,18 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SubmitTaskStyled from './submitTaskStyled';
 import DashboardLayout from '../../common/DashboardLayout';
 import SuccessfulSubmission from '../../common/SuccessfulSubmission';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { submitTaskAction } from '../../../state/tasks/tasksActionCreator';
-import { useDispatch } from 'react-redux';
+import {
+  submitTaskAction,
+  getSingleTaskAction,
+} from '../../../state/tasks/tasksActionCreator';
+import { useDispatch, useSelector } from 'react-redux';
+import { Spin, message } from 'antd';
+import { Link } from 'react-router-dom';
 
 function SubmitTask(props) {
   const [submitted, setSubmitted] = useState(false);
   const { id } = props.match.params;
   const dispatch = useDispatch();
+  const tasks = useSelector(state => state.tasks);
+  const { error, errResponse, taskSubmit, loading } = tasks;
 
-  if (submitted) {
+  const fetchData = useCallback(async () => {
+    await dispatch(getSingleTaskAction(id));
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      message.error(errResponse);
+    }
+  }, [error, errResponse]);
+
+  if (submitted && taskSubmit === 'success') {
     const data = {
       header: `Successfully sumitted Task #${id}`,
       description:
@@ -27,13 +48,19 @@ function SubmitTask(props) {
   return (
     <SubmitTaskStyled>
       <div className="container-fluid mt-5 py-3">
+        <Link
+          to={`/dashboard/pending-task/${id}`}
+          className="btn btn-outline-primary btn-sm mb-3 "
+        >
+          <i className="fas fa-arrow-left"></i> Back to Task Brief
+        </Link>
         <div className="row">
           <div className="col-md-5 col-sm-12">
             <div className="card mb-3 tasks" style={{ maxWidth: '23rem' }}>
-              <div className="card-header font-weight-bold">Task {id}</div>
+              <div className="card-header font-weight-bold">Task id {id}</div>
               <div className="card-body px-5">
                 <p className="card-text">
-                  Responsive Web Design Projects - Build a Tribute Page
+                  {tasks.singleTask ? tasks.singleTask.title : <Spin />}
                 </p>
               </div>
             </div>
@@ -52,10 +79,7 @@ function SubmitTask(props) {
                   })}
                   onSubmit={(values, { setSubmitting }) => {
                     const { url, comments } = values;
-                    alert(url, comments);
-                    dispatch(submitTaskAction({ taskId: id }));
-                    console.log(values);
-
+                    dispatch(submitTaskAction(id, url, comments));
                     setSubmitted(true);
                   }}
                 >
@@ -103,11 +127,17 @@ function SubmitTask(props) {
                         </div>
                       </div>
                       <p className="text-center">
-                        <input
-                          value="SUBMIT TASK"
-                          type="submit"
-                          className="btn btn-lg btn-primary w-75 text-center mt-5 mb-5"
-                        />
+                        {!loading ? (
+                          <input
+                            value="SUBMIT TASK"
+                            type="submit"
+                            className="btn btn-lg btn-primary w-75 text-center mt-5 mb-5"
+                          />
+                        ) : (
+                          <span>
+                            <Spin /> Submitting ....
+                          </span>
+                        )}
                       </p>
                     </Form>
                   )}
